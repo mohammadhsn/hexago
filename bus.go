@@ -2,6 +2,12 @@ package hexago
 
 import "reflect"
 
+var Bus CmdBus
+
+func init() {
+	Bus = InMemoryBus{}
+}
+
 // CmdBus decouples Cmd from its execution, dependencies, side effects.
 type CmdBus interface {
 	Handle(Cmd) string
@@ -11,6 +17,15 @@ type InMemoryBus struct {
 	cmd            *CmdBag
 	events         *EventBag
 	capturedEvents []*Event
+}
+
+// NewInMemoryBus creates a fresh bus without any captured events.
+func NewInMemoryBus(cmd *CmdBag, events *EventBag) InMemoryBus {
+	return InMemoryBus{
+		cmd:            cmd,
+		events:         events,
+		capturedEvents: make([]*Event, 0),
+	}
 }
 
 func (i InMemoryBus) Handle(cmd Cmd) string {
