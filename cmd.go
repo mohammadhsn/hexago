@@ -13,6 +13,7 @@ type Cmd struct {
 	Payload interface{}
 }
 
+// NewCmd creates a new Cmd.
 func NewCmd(name string, payload interface{}) Cmd {
 	return Cmd{
 		Name:    name,
