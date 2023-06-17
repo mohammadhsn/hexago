@@ -16,3 +16,7 @@ type Event struct {
 	At         time.Time
 	Payload    interface{}
 }
+
+type Repo interface {
+	Seen() []AggRoot
+}
