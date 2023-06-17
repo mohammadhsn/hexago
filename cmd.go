@@ -13,6 +13,13 @@ type Cmd struct {
 	Payload interface{}
 }
 
+func NewCmd(name string, payload interface{}) Cmd {
+	return Cmd{
+		Name:    name,
+		Payload: payload,
+	}
+}
+
 // CmdHandler is considered for being responsible to handling, one single Cmd
 // [command]. It's common to use the domain repositories in order to ship
 // aggregates, and using the domain functionalities to handling use cases.
