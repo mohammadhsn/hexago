@@ -6,7 +6,7 @@ import (
 )
 
 type AggRoot interface {
-	Id() uuid.UUID
+	Identifiable
 	Pull() []Event
 }
 
