@@ -2,15 +2,9 @@ package hexago
 
 import "reflect"
 
-var Bus CmdBus
-
-func init() {
-	Bus = InMemoryBus{}
-}
-
 // CmdBus decouples Cmd from its execution, dependencies, side effects.
 type CmdBus interface {
-	Handle(Cmd) string
+	Handle(Cmd) (string, error)
 }
 
 type InMemoryBus struct {
@@ -28,11 +22,11 @@ func NewInMemoryBus(cmd *CmdBag, events *EventBag) InMemoryBus {
 	}
 }
 
-func (i InMemoryBus) Handle(cmd Cmd) string {
+func (i InMemoryBus) Handle(cmd Cmd) (string, error) {
 	hf, err := i.cmd.FactoryFor(cmd.Name)
 
 	if err != nil {
-		return ""
+		return "", err
 	}
 
 	h := hf()
@@ -42,7 +36,7 @@ func (i InMemoryBus) Handle(cmd Cmd) string {
 	v, err := extractRepoField(reflect.ValueOf(h))
 
 	if err != nil {
-		return res
+		return res, err
 	}
 
 	repo, ok := v.Interface().(Repo)
@@ -61,7 +55,7 @@ func (i InMemoryBus) Handle(cmd Cmd) string {
 		i.HandleEvent(*e)
 	}
 
-	return res
+	return res, nil
 }
 
 func (i InMemoryBus) HandleEvent(e Event) {

@@ -123,7 +123,7 @@ func (s SthHappenedHandler2) Handle(_ Event) {
 		busAudit = append(busAudit, fmt.Sprintf("%T", s))
 	}()
 
-	cmdBus.Handle(NewCmd(DoSth2Cmd, DoSth2{A: "foo", B: 10}))
+	_, _ = cmdBus.Handle(NewCmd(DoSth2Cmd, DoSth2{A: "foo", B: 10}))
 }
 
 func createBus() {
@@ -143,12 +143,19 @@ func createBus() {
 		return SthHappenedHandler2{}
 	})
 
-	cmdBus = &InMemoryBus{cmdBag, eventBag, make([]*Event, 0)}
+	bus := NewInMemoryBus(cmdBag, eventBag)
+	cmdBus = &bus
 }
 
 func TestInMemoryBus_Handle(t *testing.T) {
 	createBus()
-	if res := cmdBus.Handle(NewDoSth()); res == "" {
+	res, err := cmdBus.Handle(NewDoSth())
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if res == "" {
 		t.Error("did not expect empty string")
 	}
 
