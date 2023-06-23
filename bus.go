@@ -52,13 +52,13 @@ func (i InMemoryBus) Handle(cmd Cmd) (string, error) {
 	for len(i.capturedEvents) != 0 {
 		e := i.capturedEvents[0]
 		i.capturedEvents = i.capturedEvents[1:]
-		i.HandleEvent(*e)
+		i.handleEvent(*e)
 	}
 
 	return res, nil
 }
 
-func (i InMemoryBus) HandleEvent(e Event) {
+func (i InMemoryBus) handleEvent(e Event) {
 	for _, ef := range i.events.FactoryFor(e.Name) {
 		ef().Handle(e)
 	}
