@@ -4,12 +4,18 @@ type Middleware interface {
 	Exec(Cmd, func(Cmd))
 }
 
-type Chain []Middleware
+type Chain struct {
+	mw []Middleware
+}
 
-func (ch Chain) Wrap(c Cmd) func(Cmd) {
+func NewChain(mw ...Middleware) *Chain {
+	return &Chain{mw}
+}
+
+func (ch *Chain) Wrap(c Cmd) func(Cmd) {
 	f := func(Cmd) {}
 
-	for _, m := range ch {
+	for _, m := range ch.mw {
 		l := f
 		mid := m
 		f = func(c Cmd) {
@@ -18,4 +24,8 @@ func (ch Chain) Wrap(c Cmd) func(Cmd) {
 	}
 
 	return f
+}
+
+func (ch *Chain) Add(mw Middleware) {
+	ch.mw = append(ch.mw, mw)
 }
